@@ -374,11 +374,24 @@ function dg_festival_program_shortcode(): string
 {
     dg_festival_program_enqueue_assets();
 
-    $template = DG_FESTIVAL_PROGRAM_PATH . 'templates/program.php';
+    $template_candidates = [
+        DG_FESTIVAL_PROGRAM_PATH . 'templates/program.php',
+        __DIR__ . '/templates/program.php',
+        dirname(__FILE__) . '/templates/program.php',
+    ];
 
-    if (!file_exists($template)) {
+    $template = '';
+
+    foreach ($template_candidates as $template_candidate) {
+        if (file_exists($template_candidate)) {
+            $template = $template_candidate;
+            break;
+        }
+    }
+
+    if ($template === '') {
         if (current_user_can('manage_options')) {
-            return '<div class="dg-program dg-program-error">DG Program: a sablon fájl nem található.</div>';
+            return '<div class="dg-program dg-program-error">DG Program: a sablon fájl nem található. Ellenőrizd, hogy a plugin mappában létezik-e ez: <code>templates/program.php</code></div>';
         }
 
         return '';
