@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DGPM Program
  * Description: WordPress shortcode for a configurable festival program schedule.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Tóth Csaba
  * Developer: Tóth Csaba
  * Owner: Tóth Csaba
@@ -13,10 +13,11 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('DGPM_VERSION')) {
-    define('DGPM_VERSION', '1.0.1');
+    define('DGPM_VERSION', '1.1.0');
 }
 
 define('DGPM_OPTION', 'dgpm_program_data');
+define('DGPM_LIBRARY_OPTION', 'dgpm_program_library');
 
 function dgpm_default_data() {
     return array(
@@ -48,12 +49,51 @@ function dgpm_default_data() {
     );
 }
 
-function dgpm_data() {
-    $data = get_option(DGPM_OPTION);
-    if (!is_array($data)) {
-        $data = dgpm_default_data();
+function dgpm_default_file() {
+    return 'default';
+}
+
+function dgpm_programs() {
+    $programs = get_option(DGPM_LIBRARY_OPTION);
+
+    if (!is_array($programs) || empty($programs)) {
+        $legacy = get_option(DGPM_OPTION);
+        $programs = array(
+            dgpm_default_file() => is_array($legacy) ? $legacy : dgpm_default_data()
+        );
+        update_option(DGPM_LIBRARY_OPTION, $programs);
     }
-    return $data;
+
+    return $programs;
+}
+
+function dgpm_current_file() {
+    $programs = dgpm_programs();
+    $file = isset($_GET['dgpm_file']) ? sanitize_key(wp_unslash($_GET['dgpm_file'])) : '';
+
+    if ($file !== '' && isset($programs[$file])) {
+        return $file;
+    }
+
+    $keys = array_keys($programs);
+    return !empty($keys) ? (string) $keys[0] : dgpm_default_file();
+}
+
+function dgpm_data($file = '') {
+    $programs = dgpm_programs();
+    $file = sanitize_key((string) $file);
+
+    if ($file !== '' && isset($programs[$file]) && is_array($programs[$file])) {
+        return $programs[$file];
+    }
+
+    $fallback = dgpm_default_file();
+    if (isset($programs[$fallback]) && is_array($programs[$fallback])) {
+        return $programs[$fallback];
+    }
+
+    $first = reset($programs);
+    return is_array($first) ? $first : dgpm_default_data();
 }
 
 function dgpm_slug($text) {
@@ -179,23 +219,53 @@ function dgpm_handle_save() {
     }
     check_admin_referer('dgpm_save');
     $raw = isset($_POST['dgpm']) && is_array($_POST['dgpm']) ? wp_unslash($_POST['dgpm']) : array();
-    update_option(DGPM_OPTION, dgpm_sanitize_data($raw));
-    wp_safe_redirect(admin_url('admin.php?page=dgpm-program&updated=1'));
+    $file = isset($_POST['dgpm_file']) ? sanitize_key(wp_unslash($_POST['dgpm_file'])) : '';
+
+    if ($file === '') {
+        $file = dgpm_slug(isset($raw['title']) ? $raw['title'] : '');
+    }
+
+    if ($file === '') {
+        $file = dgpm_default_file();
+    }
+
+    $programs = dgpm_programs();
+
+    $data = dgpm_sanitize_data($raw);
+    $programs[$file] = $data;
+
+    update_option(DGPM_LIBRARY_OPTION, $programs);
+    update_option(DGPM_OPTION, $data);
+    wp_safe_redirect(admin_url('admin.php?page=dgpm-program&dgpm_file=' . rawurlencode($file) . '&updated=1'));
     exit;
 }
 add_action('admin_post_dgpm_save', 'dgpm_handle_save');
 
 function dgpm_admin_page() {
-    $data = dgpm_data();
+    $programs = dgpm_programs();
+    $current_file = dgpm_current_file();
+    $data = dgpm_data($current_file);
     $venues = $data['venues'];
     $tags = $data['tags'];
     ?>
     <div class="wrap dgpm-admin">
       <h1>DG Program</h1>
       <?php if (isset($_GET['updated'])) : ?><div class="notice notice-success"><p>Settings saved.</p></div><?php endif; ?>
+      <p>
+        <strong>Saved programs:</strong>
+        <?php foreach ($programs as $program_file => $program_data) : ?>
+          <a class="button <?php echo $program_file === $current_file ? 'button-primary' : ''; ?>" href="<?php echo esc_url(admin_url('admin.php?page=dgpm-program&dgpm_file=' . rawurlencode($program_file))); ?>"><?php echo esc_html($program_file); ?></a>
+        <?php endforeach; ?>
+      </p>
       <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <input type="hidden" name="action" value="dgpm_save">
         <?php wp_nonce_field('dgpm_save'); ?>
+        <h2>Program file</h2>
+        <p>
+          <input class="regular-text" name="dgpm_file" value="<?php echo esc_attr($current_file); ?>" placeholder="program-file-name">
+          <code>[dg_program file="<?php echo esc_attr($current_file); ?>"]</code>
+        </p>
+        <p class="description">Use a short unique file name for each schedule. Changing this value and saving creates or updates that shortcode target. Example: <code>family-day</code>, <code>friday</code>, <code>main-stage</code>.</p>
         <h2>Header</h2>
         <p><input class="regular-text" name="dgpm[title]" value="<?php echo esc_attr($data['title']); ?>" placeholder="Title"></p>
         <p><input class="regular-text" name="dgpm[subtitle]" value="<?php echo esc_attr($data['subtitle']); ?>" placeholder="Subtitle"></p>
@@ -261,8 +331,17 @@ function dgpm_admin_event_html($ri, $ei, $event, $venues, $tags) {
     <?php return ob_get_clean();
 }
 
-function dgpm_shortcode() {
-    $data = dgpm_data();
+function dgpm_shortcode($atts = array()) {
+    $atts = shortcode_atts(
+        array(
+            'file' => dgpm_default_file(),
+            'id' => '',
+        ),
+        $atts,
+        'dg_program'
+    );
+    $file = $atts['id'] !== '' ? $atts['id'] : $atts['file'];
+    $data = dgpm_data($file);
     $venues = $data['venues'];
     $tags = array();
     foreach ($data['tags'] as $t) { $tags[$t['id']] = $t['label']; }
