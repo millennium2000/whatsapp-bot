@@ -2,8 +2,10 @@
 /**
  * Plugin Name: DGPM Program
  * Description: WordPress shortcode for a configurable festival program schedule.
- * Version: 1.0.0
- * Author: Duna Group
+ * Version: 1.0.1
+ * Author: Tóth Csaba
+ * Developer: Tóth Csaba
+ * Owner: Tóth Csaba
  */
 
 if (!defined('ABSPATH')) {
@@ -11,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('DGPM_VERSION')) {
-    define('DGPM_VERSION', '1.0.0');
+    define('DGPM_VERSION', '1.0.1');
 }
 
 define('DGPM_OPTION', 'dgpm_program_data');
@@ -173,7 +175,7 @@ add_action('admin_menu', 'dgpm_admin_menu');
 
 function dgpm_handle_save() {
     if (!current_user_can('manage_options')) {
-        wp_die('Nincs jogosultsag.');
+        wp_die('You do not have permission to access this page.');
     }
     check_admin_referer('dgpm_save');
     $raw = isset($_POST['dgpm']) && is_array($_POST['dgpm']) ? wp_unslash($_POST['dgpm']) : array();
@@ -190,33 +192,33 @@ function dgpm_admin_page() {
     ?>
     <div class="wrap dgpm-admin">
       <h1>DG Program</h1>
-      <?php if (isset($_GET['updated'])) : ?><div class="notice notice-success"><p>Mentve.</p></div><?php endif; ?>
+      <?php if (isset($_GET['updated'])) : ?><div class="notice notice-success"><p>Settings saved.</p></div><?php endif; ?>
       <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <input type="hidden" name="action" value="dgpm_save">
         <?php wp_nonce_field('dgpm_save'); ?>
-        <h2>Fejlec</h2>
-        <p><input class="regular-text" name="dgpm[title]" value="<?php echo esc_attr($data['title']); ?>" placeholder="Cim"></p>
-        <p><input class="regular-text" name="dgpm[subtitle]" value="<?php echo esc_attr($data['subtitle']); ?>" placeholder="Alcim"></p>
-        <h2>Helyszinek</h2>
+        <h2>Header</h2>
+        <p><input class="regular-text" name="dgpm[title]" value="<?php echo esc_attr($data['title']); ?>" placeholder="Title"></p>
+        <p><input class="regular-text" name="dgpm[subtitle]" value="<?php echo esc_attr($data['subtitle']); ?>" placeholder="Subtitle"></p>
+        <h2>Venues</h2>
         <div id="dgpm-venues">
           <?php foreach ($venues as $i => $venue) : ?>
-            <p class="dgpm-line"><input name="dgpm[venues][<?php echo (int) $i; ?>][id]" value="<?php echo esc_attr($venue['id']); ?>" placeholder="azonosito"> <input name="dgpm[venues][<?php echo (int) $i; ?>][label]" value="<?php echo esc_attr($venue['label']); ?>" placeholder="nev"> <input type="color" name="dgpm[venues][<?php echo (int) $i; ?>][color]" value="<?php echo esc_attr($venue['color']); ?>"> <input type="color" name="dgpm[venues][<?php echo (int) $i; ?>][text]" value="<?php echo esc_attr($venue['text']); ?>"> <button type="button" class="button dgpm-remove">Torles</button></p>
+            <p class="dgpm-line"><input name="dgpm[venues][<?php echo (int) $i; ?>][id]" value="<?php echo esc_attr($venue['id']); ?>" placeholder="ID"> <input name="dgpm[venues][<?php echo (int) $i; ?>][label]" value="<?php echo esc_attr($venue['label']); ?>" placeholder="Name"> <input type="color" name="dgpm[venues][<?php echo (int) $i; ?>][color]" value="<?php echo esc_attr($venue['color']); ?>"> <input type="color" name="dgpm[venues][<?php echo (int) $i; ?>][text]" value="<?php echo esc_attr($venue['text']); ?>"> <button type="button" class="button dgpm-remove">Delete</button></p>
           <?php endforeach; ?>
         </div>
-        <p><button type="button" class="button" id="dgpm-add-venue">Helyszin hozzaadasa</button></p>
-        <h2>Opcion?lis tagek</h2>
+        <p><button type="button" class="button" id="dgpm-add-venue">Add venue</button></p>
+        <h2>Optional tags</h2>
         <div id="dgpm-tags">
           <?php foreach ($tags as $i => $tag) : ?>
-            <p class="dgpm-line"><input name="dgpm[tags][<?php echo (int) $i; ?>][id]" value="<?php echo esc_attr($tag['id']); ?>" placeholder="azonosito"> <input name="dgpm[tags][<?php echo (int) $i; ?>][label]" value="<?php echo esc_attr($tag['label']); ?>" placeholder="nev"> <button type="button" class="button dgpm-remove">Torles</button></p>
+            <p class="dgpm-line"><input name="dgpm[tags][<?php echo (int) $i; ?>][id]" value="<?php echo esc_attr($tag['id']); ?>" placeholder="ID"> <input name="dgpm[tags][<?php echo (int) $i; ?>][label]" value="<?php echo esc_attr($tag['label']); ?>" placeholder="Name"> <button type="button" class="button dgpm-remove">Delete</button></p>
           <?php endforeach; ?>
         </div>
-        <p><button type="button" class="button" id="dgpm-add-tag">Tag hozzaadasa</button></p>
-        <h2>Idopontok es programok</h2>
+        <p><button type="button" class="button" id="dgpm-add-tag">Add tag</button></p>
+        <h2>Times and events</h2>
         <div id="dgpm-rows">
           <?php foreach ($data['rows'] as $ri => $row) : dgpm_admin_row($ri, $row, $venues, $tags); endforeach; ?>
         </div>
-        <p><button type="button" class="button" id="dgpm-add-row">Idopont hozzaadasa</button></p>
-        <?php submit_button('Mentes'); ?>
+        <p><button type="button" class="button" id="dgpm-add-row">Add time slot</button></p>
+        <?php submit_button('Save changes'); ?>
       </form>
     </div>
     <style>.dgpm-admin input{margin:3px}.dgpm-row{background:#fff;border:1px solid #ccd0d4;padding:12px;margin:12px 0}.dgpm-event{background:#f6f7f7;border:1px solid #dcdcde;padding:8px;margin:8px 0}.dgpm-line{display:flex;gap:6px;align-items:center;flex-wrap:wrap}</style>
@@ -225,8 +227,8 @@ function dgpm_admin_page() {
       var rowIndex = <?php echo (int) count($data['rows']); ?>;
       function removeBind(root){root.querySelectorAll('.dgpm-remove').forEach(function(b){b.onclick=function(){b.closest('.dgpm-line,.dgpm-event,.dgpm-row').remove();};});}
       removeBind(document);
-      document.getElementById('dgpm-add-venue').onclick=function(){var i=Date.now();document.getElementById('dgpm-venues').insertAdjacentHTML('beforeend','<p class="dgpm-line"><input name="dgpm[venues]['+i+'][id]" placeholder="azonosito"> <input name="dgpm[venues]['+i+'][label]" placeholder="nev"> <input type="color" name="dgpm[venues]['+i+'][color]" value="#eef3f7"> <input type="color" name="dgpm[venues]['+i+'][text]" value="#102b46"> <button type="button" class="button dgpm-remove">Torles</button></p>');removeBind(document);};
-      document.getElementById('dgpm-add-tag').onclick=function(){var i=Date.now();document.getElementById('dgpm-tags').insertAdjacentHTML('beforeend','<p class="dgpm-line"><input name="dgpm[tags]['+i+'][id]" placeholder="azonosito"> <input name="dgpm[tags]['+i+'][label]" placeholder="nev"> <button type="button" class="button dgpm-remove">Torles</button></p>');removeBind(document);};
+      document.getElementById('dgpm-add-venue').onclick=function(){var i=Date.now();document.getElementById('dgpm-venues').insertAdjacentHTML('beforeend','<p class="dgpm-line"><input name="dgpm[venues]['+i+'][id]" placeholder="ID"> <input name="dgpm[venues]['+i+'][label]" placeholder="Name"> <input type="color" name="dgpm[venues]['+i+'][color]" value="#eef3f7"> <input type="color" name="dgpm[venues]['+i+'][text]" value="#102b46"> <button type="button" class="button dgpm-remove">Delete</button></p>');removeBind(document);};
+      document.getElementById('dgpm-add-tag').onclick=function(){var i=Date.now();document.getElementById('dgpm-tags').insertAdjacentHTML('beforeend','<p class="dgpm-line"><input name="dgpm[tags]['+i+'][id]" placeholder="ID"> <input name="dgpm[tags]['+i+'][label]" placeholder="Name"> <button type="button" class="button dgpm-remove">Delete</button></p>');removeBind(document);};
       document.getElementById('dgpm-add-row').onclick=function(){var i=rowIndex++;document.getElementById('dgpm-rows').insertAdjacentHTML('beforeend',<?php echo wp_json_encode(dgpm_admin_row_html('__ROW__', array('time'=>'','events'=>array()), $venues, $tags)); ?>.replace(/__ROW__/g,i));removeBind(document);bindAddEvent(document);};
       function bindAddEvent(root){root.querySelectorAll('.dgpm-add-event').forEach(function(b){b.onclick=function(){var row=b.getAttribute('data-row');var box=b.closest('.dgpm-row').querySelector('.dgpm-events');var i=Date.now();box.insertAdjacentHTML('beforeend',<?php echo wp_json_encode(dgpm_admin_event_html('__ROW__', '__EVENT__', array(), $venues, $tags)); ?>.replace(/__ROW__/g,row).replace(/__EVENT__/g,i));removeBind(document);};});}
       bindAddEvent(document);
@@ -239,9 +241,9 @@ function dgpm_admin_row($ri, $row, $venues, $tags) { echo dgpm_admin_row_html($r
 function dgpm_admin_row_html($ri, $row, $venues, $tags) {
     ob_start(); ?>
     <div class="dgpm-row">
-      <p class="dgpm-line"><strong>Idopont</strong> <input type="time" name="dgpm[rows][<?php echo esc_attr($ri); ?>][time]" value="<?php echo esc_attr(isset($row['time']) ? $row['time'] : ''); ?>"> <button type="button" class="button dgpm-remove">Idopont torlese</button></p>
+      <p class="dgpm-line"><strong>Time</strong> <input type="time" name="dgpm[rows][<?php echo esc_attr($ri); ?>][time]" value="<?php echo esc_attr(isset($row['time']) ? $row['time'] : ''); ?>"> <button type="button" class="button dgpm-remove">Delete time slot</button></p>
       <div class="dgpm-events"><?php if (!empty($row['events'])) { foreach ($row['events'] as $ei => $event) { echo dgpm_admin_event_html($ri, $ei, $event, $venues, $tags); } } ?></div>
-      <p><button type="button" class="button dgpm-add-event" data-row="<?php echo esc_attr($ri); ?>">Program hozzaadasa</button></p>
+      <p><button type="button" class="button dgpm-add-event" data-row="<?php echo esc_attr($ri); ?>">Add event</button></p>
     </div>
     <?php return ob_get_clean();
 }
@@ -250,11 +252,11 @@ function dgpm_admin_event_html($ri, $ei, $event, $venues, $tags) {
     $tag = isset($event['tag']) ? $event['tag'] : '';
     ob_start(); ?>
     <div class="dgpm-event">
-      <p class="dgpm-line"><input class="regular-text" name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][title]" value="<?php echo esc_attr(isset($event['title']) ? $event['title'] : ''); ?>" placeholder="Program neve">
+      <p class="dgpm-line"><input class="regular-text" name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][title]" value="<?php echo esc_attr(isset($event['title']) ? $event['title'] : ''); ?>" placeholder="Event title">
       <select name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][venue]"><?php foreach ($venues as $v) : ?><option value="<?php echo esc_attr($v['id']); ?>" <?php selected($venue, $v['id']); ?>><?php echo esc_html($v['label']); ?></option><?php endforeach; ?></select>
-      <select name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][tag]"><option value="">Nincs tag</option><?php foreach ($tags as $t) : ?><option value="<?php echo esc_attr($t['id']); ?>" <?php selected($tag, $t['id']); ?>><?php echo esc_html($t['label']); ?></option><?php endforeach; ?></select>
-      Vege: <input type="time" name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][end]" value="<?php echo esc_attr(isset($event['end']) ? $event['end'] : ''); ?>">
-      <button type="button" class="button dgpm-remove">Torles</button></p>
+      <select name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][tag]"><option value="">No tag</option><?php foreach ($tags as $t) : ?><option value="<?php echo esc_attr($t['id']); ?>" <?php selected($tag, $t['id']); ?>><?php echo esc_html($t['label']); ?></option><?php endforeach; ?></select>
+      Ends at: <input type="time" name="dgpm[rows][<?php echo esc_attr($ri); ?>][events][<?php echo esc_attr($ei); ?>][end]" value="<?php echo esc_attr(isset($event['end']) ? $event['end'] : ''); ?>">
+      <button type="button" class="button dgpm-remove">Delete</button></p>
     </div>
     <?php return ob_get_clean();
 }
