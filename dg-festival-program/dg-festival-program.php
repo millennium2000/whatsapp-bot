@@ -193,7 +193,7 @@ function dg_festival_program_get_schedule(): array
 {
     $schedule = get_option(DG_FESTIVAL_PROGRAM_OPTION);
 
-    if (!is_array($schedule)) {
+    if (!is_array($schedule) || empty($schedule)) {
         return dg_festival_program_get_default_schedule();
     }
 
@@ -374,12 +374,30 @@ function dg_festival_program_shortcode(): string
 {
     dg_festival_program_enqueue_assets();
 
+    $template = DG_FESTIVAL_PROGRAM_PATH . 'templates/program.php';
+
+    if (!file_exists($template)) {
+        if (current_user_can('manage_options')) {
+            return '<div class="dg-program dg-program-error">DG Program: a sablon fájl nem található.</div>';
+        }
+
+        return '';
+    }
+
     ob_start();
-    include DG_FESTIVAL_PROGRAM_PATH . 'templates/program.php';
-    return ob_get_clean();
+    include $template;
+    $html = trim((string) ob_get_clean());
+
+    if ($html === '' && current_user_can('manage_options')) {
+        return '<div class="dg-program dg-program-error">DG Program: a shortcode lefutott, de nem készült megjeleníthető HTML.</div>';
+    }
+
+    return $html;
 }
 
 add_shortcode('dg_program', 'dg_festival_program_shortcode');
+add_shortcode('dg_festival_program', 'dg_festival_program_shortcode');
+add_shortcode('festival_program', 'dg_festival_program_shortcode');
 
 function dg_festival_program_admin_menu(): void
 {
