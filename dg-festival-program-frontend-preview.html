@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DG Program frontend előnézet</title>
+  <link rel="stylesheet" href="dg-festival-program/assets/css/dg-festival-program.css">
+  <style>
+    body {
+      margin: 0;
+      background: #eef2f6;
+      padding: 32px;
+    }
+
+    .preview-page {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 24px;
+      border: 1px solid #d5dde6;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
+
+      .preview-page {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-page">
+    <div class="dg-program">
+      <div class="dg-program-head">
+        <div class="dg-program-title">I. DUNA GROUP CSALÁDI NAP</div>
+        <div class="dg-program-subtitle">Zánka · Program</div>
+      </div>
+
+      <div class="dg-program-legend">
+        <div class="dg-legend-item dg-venue-chip" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">Nagyszínpad</div>
+        <div class="dg-legend-item dg-venue-chip" style="--dg-venue-bg:#5f96cf;--dg-venue-fg:#0f2133;">Színház</div>
+        <div class="dg-legend-item dg-venue-chip" style="--dg-venue-bg:#f2e799;--dg-venue-fg:#0f2133;">Sportcsarnok</div>
+        <div class="dg-legend-item dg-venue-chip" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">Sportkert</div>
+      </div>
+
+      <div class="dg-program-type-legend">
+        <span class="dg-program-type dg-program-type-main">Fő program</span>
+        <span class="dg-program-type dg-program-type-registration">Regisztrációhoz kötött</span>
+        <span class="dg-program-type dg-program-type-continuous">Folyamatos</span>
+      </div>
+
+      <div class="dg-desktop-view">
+        <div class="dg-program-table-wrap">
+          <table class="dg-program-table dg-program-table-dynamic">
+            <thead>
+              <tr>
+                <th class="dg-program-time-head">Időpont</th>
+                <th>Nagyszínpad</th>
+                <th>Színház</th>
+                <th>Sportcsarnok</th>
+                <th>Sportkert</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="time">09:30<span class="dg-time-note">Kapunyitás</span></td>
+                <td class="muted empty"></td>
+                <td class="muted empty"></td>
+                <td class="muted empty"></td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Logi kocsma, sakk szimultán, bringaturmix</span>
+                    <span class="dg-program-type dg-program-type-continuous">Folyamatos</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">10:30</td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Megnyitó</span>
+                    <span class="dg-program-type dg-program-type-main">Fő program</span>
+                  </div>
+                </td>
+                <td class="muted empty"></td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#f2e799;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Focikupa (I. helyszín)</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Focikupa (II. helyszín)</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">11:00</td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Kalap Jakab koncert</span>
+                    <span class="dg-program-type dg-program-type-main">Fő program</span>
+                  </div>
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Balatoni sétahajózás</span>
+                    <span class="dg-program-type dg-program-type-registration">Regisztrációhoz kötött</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#5f96cf;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Ács Fruzsina stand-up műsor</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#f2e799;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Focikupa (I. helyszín)</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Focikupa (II. helyszín)</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">13:00</td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Kicsi Gesztenye Klub koncert</span>
+                    <span class="dg-program-type dg-program-type-main">Fő program</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#5f96cf;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Szabó Győző és Rezes Judit: Párkapcsolatunk</span>
+                    <span class="dg-program-type dg-program-type-main">Fő program</span>
+                  </div>
+                </td>
+                <td class="dg-venue-cell" style="--dg-venue-bg:#f2e799;--dg-venue-fg:#0f2133;">
+                  <div class="dg-program-event">
+                    <span class="dg-program-event-title">Veszprém Handball találkozó</span>
+                  </div>
+                </td>
+                <td class="muted empty"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dg-mobile-view">
+        <div class="dg-mobile-card" data-time="09:30">
+          <div class="dg-mobile-time">09:30<span class="dg-mobile-time-note">Kapunyitás</span></div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Sportkert</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Logi kocsma, sakk szimultán, bringaturmix</span>
+                <span class="dg-program-type dg-program-type-continuous">Folyamatos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dg-mobile-card" data-time="10:30">
+          <div class="dg-mobile-time">10:30</div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Nagyszínpad</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Megnyitó</span>
+                <span class="dg-program-type dg-program-type-main">Fő program</span>
+              </div>
+            </div>
+          </div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Sportcsarnok</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#f2e799;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Focikupa (I. helyszín)</span>
+              </div>
+            </div>
+          </div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Sportkert</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#ffd200;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Focikupa (II. helyszín)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dg-mobile-card" data-time="11:00">
+          <div class="dg-mobile-time">11:00</div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Nagyszínpad</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Kalap Jakab koncert</span>
+                <span class="dg-program-type dg-program-type-main">Fő program</span>
+              </div>
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#c9d7e6;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Balatoni sétahajózás</span>
+                <span class="dg-program-type dg-program-type-registration">Regisztrációhoz kötött</span>
+              </div>
+            </div>
+          </div>
+          <div class="dg-mobile-section">
+            <div class="dg-mobile-label">Színház</div>
+            <div class="dg-tag-row">
+              <div class="dg-tag dg-venue-chip" style="--dg-venue-bg:#5f96cf;--dg-venue-fg:#0f2133;">
+                <span class="dg-program-event-title">Ács Fruzsina stand-up műsor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
